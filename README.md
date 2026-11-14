@@ -4,8 +4,7 @@ Aplicação web colaborativa para **registrar e acompanhar problemas de infraest
 
 Projeto acadêmico desenvolvido para a **Global Solution 2026 da FIAP**, com o tema **CitizenTech**: tecnologia a serviço da cidadania e da participação do cidadão na melhoria do espaço urbano.
 
-> **Status:** backend concluído (banco de dados, regras de negócio e API REST, com 145 testes automatizados).
-> Próximas etapas: frontend em HTML, CSS e JavaScript e um dashboard com Chart.js.
+> **Status:** MVP concluído: backend (banco de dados, regras de negócio e API REST), interface web e painel de indicadores com Chart.js, com 175 testes automatizados.
 
 ---
 
@@ -14,6 +13,7 @@ Projeto acadêmico desenvolvido para a **Global Solution 2026 da FIAP**, com o t
 - [O problema](#o-problema)
 - [A solução](#a-solução)
 - [Funcionalidades](#funcionalidades)
+- [Interface web](#interface-web)
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
 - [Modelo de dados](#modelo-de-dados)
@@ -22,6 +22,7 @@ Projeto acadêmico desenvolvido para a **Global Solution 2026 da FIAP**, com o t
 - [Testes](#testes)
 - [Decisões técnicas](#decisões-técnicas)
 - [Estrutura do projeto](#estrutura-do-projeto)
+- [Limitações do MVP](#limitações-do-mvp)
 - [Próximos passos](#próximos-passos)
 - [Documentação complementar](#documentação-complementar)
 - [Equipe](#equipe)
@@ -43,7 +44,7 @@ O **Bairro em Foco** permite que qualquer pessoa:
 1. **Registre** uma ocorrência informando a categoria, uma descrição, o bairro e um endereço ou ponto de referência;
 2. **Receba um número de protocolo** para acompanhar a ocorrência;
 3. **Consulte o andamento** (`ABERTO` → `EM_ANDAMENTO` → `RESOLVIDO`) e o **histórico completo** de alterações;
-4. **Visualize indicadores** sobre as ocorrências (etapa futura, com dashboard).
+4. **Visualize indicadores** sobre as ocorrências: totais por status na página inicial e um painel com gráficos por status, categoria, bairro e período, taxa e tempo médio de resolução.
 
 **Privacidade desde o início:** o registro **não coleta nenhum dado pessoal** (nome, e-mail, telefone ou IP). O cidadão acompanha a ocorrência apenas pelo número de protocolo.
 
@@ -51,13 +52,12 @@ O **Bairro em Foco** permite que qualquer pessoa:
 
 | Funcionalidade | Situação |
 |---|---|
-| Cadastro de ocorrências com validação e normalização dos dados | ✅ Implementado (API) |
-| Consulta por protocolo e listagem com filtros por status e categoria | ✅ Implementado (API) |
-| Atualização de status com regras de transição | ✅ Implementado (API) |
-| Histórico de todas as alterações de status | ✅ Implementado (API) |
-| Listagem de categorias | ✅ Implementado (API) |
-| Interface web (HTML, CSS e JavaScript) | 🔜 Próxima etapa |
-| Dashboard com indicadores e gráficos (Chart.js) | 🔜 Planejado |
+| Cadastro de ocorrências com validação e normalização dos dados | ✅ API e interface |
+| Consulta por protocolo e listagem com filtros por status e categoria | ✅ API e interface |
+| Atualização de status com regras de transição | ✅ API e interface |
+| Histórico de todas as alterações de status | ✅ API e interface |
+| Indicadores por status na página inicial | ✅ Interface |
+| Painel de indicadores com gráficos (Chart.js) | ✅ Interface |
 
 **Categorias:** Buraco na via · Iluminação pública · Descarte irregular de lixo · Calçada danificada · Outros
 
@@ -74,6 +74,22 @@ stateDiagram-v2
 
 `RESOLVIDO` é um estado **definitivo**: uma ocorrência resolvida não pode ser reaberta.
 
+## Interface web
+
+Cinco páginas, servidas pelo próprio Spring Boot em `http://localhost:8080`:
+
+| Página | O que oferece |
+|---|---|
+| **Início** (`/`) | Apresentação, consulta por número de protocolo, indicadores de ocorrências abertas, em andamento e resolvidas, e as categorias |
+| **Registrar** (`/registrar.html`) | Formulário com validação imediata, erros indicados em cada campo e o protocolo exibido em destaque ao final |
+| **Ocorrências** (`/ocorrencias.html`) | Lista em cards com filtros por status e categoria. Os filtros ficam na URL e podem ser compartilhados. |
+| **Detalhe** (`/ocorrencia.html?id=N`) | Dados da ocorrência, linha do tempo do histórico e atualização de status, mostrando só as transições permitidas e pedindo confirmação para resolver |
+| **Painel** (`/painel.html`) | Cartões com total, abertas, em andamento, resolvidas, taxa e tempo médio de resolução, e 5 gráficos: por status, por categoria (separada por status), novas ocorrências nos últimos 30 dias, bairros com mais ocorrências e tempo médio de resolução por categoria. Cada gráfico tem uma tabela equivalente. |
+
+A interface é **responsiva** (celular, tablet e desktop) e foi pensada para ser acessível: navegação por teclado, mensagens anunciadas a leitores de tela e status indicados por cor, ícone e texto. Ela também trata estados de **carregamento**, **lista vazia**, **erro de validação**, **protocolo não encontrado**, **conflito de atualização**, **erro do servidor** e **falta de conexão**.
+
+É feita com HTML, CSS e JavaScript **nativos**, sem frameworks nem etapa de build. A única biblioteca é o **Chart.js**, usado só no painel. Detalhes e roteiro de testes manuais em [docs/frontend.md](docs/frontend.md).
+
 ## Tecnologias
 
 | Camada | Tecnologia |
@@ -84,17 +100,18 @@ stateDiagram-v2
 | Acesso a dados | JDBC com `JdbcClient` do Spring, com SQL escrito à mão e **sem JPA/Hibernate** |
 | Build | Maven Wrapper (não exige Maven instalado) |
 | Testes | JUnit 5, AssertJ, Mockito, MockMvc |
-| Frontend (próxima etapa) | HTML, CSS, JavaScript e Chart.js |
+| Frontend | HTML, CSS e JavaScript nativos (*ES modules*), sem frameworks |
+| Gráficos | Chart.js 4.6.1 (licença MIT), cópia local em `static/vendor/` |
 
 O projeto não usa Docker nem servidor de banco de dados externo: basta ter o Java 21 instalado.
 
 ## Arquitetura
 
-Aplicação monolítica em camadas. O próprio Spring Boot servirá a API e os arquivos do frontend, a partir de uma única aplicação e de um único comando para executar.
+Aplicação monolítica em camadas. O próprio Spring Boot serve a API e os arquivos do frontend, a partir de uma única aplicação e de um único comando para executar.
 
 ```mermaid
 flowchart LR
-    U[Navegador] -->|HTTP / JSON| C[Controller<br/>REST]
+    U[Navegador<br/>HTML + JS] -->|HTTP / JSON| C[Controller<br/>REST]
     C --> S[Service<br/>regras de negócio]
     S --> R[Repository<br/>JDBC + SQL]
     R --> DB[(SQLite)]
@@ -237,7 +254,7 @@ cd <pasta-do-projeto>
 ./mvnw spring-boot:run
 ```
 
-A aplicação sobe em **http://localhost:8080**. Teste a API com:
+Acesse **http://localhost:8080** no navegador para usar a interface. A API fica em `http://localhost:8080/api`. Por exemplo:
 
 ```bash
 curl http://localhost:8080/api/categorias
@@ -248,8 +265,6 @@ Na primeira execução, o banco é criado automaticamente em `data/bairro-em-foc
 ```
 SQLite conectado: ...\data\bairro-em-foco.db | foreign_keys=ON | categorias cadastradas: 5
 ```
-
-> A interface web ainda não foi implementada. Por enquanto, a raiz `http://localhost:8080/` retorna 404, o que é esperado.
 
 ### Recriar o banco de desenvolvimento
 
@@ -262,7 +277,7 @@ O `schema.sql` só cria o que ainda não existe e **nunca apaga dados**. Para co
 ./mvnw test            # Linux / macOS
 ```
 
-**145 testes automatizados**, todos passando:
+**175 testes automatizados**, todos passando:
 
 | Área | Testes | O que garantem |
 |---|---|---|
@@ -270,9 +285,12 @@ O `schema.sql` só cria o que ainda não existe e **nunca apaga dados**. Para co
 | Repositories | 29 | Inserções, consultas, filtros, ordenação, atualização de status, conversão de datas |
 | Services | 38 | Validação, normalização do bairro, todas as transições permitidas e proibidas, conflito de atualização, **rollback** da transação |
 | API REST | 37 | Contrato HTTP de cada endpoint, formato JSON, códigos de erro, `ProblemDetail`, ausência de detalhes internos em erros 500, fluxo completo até o banco |
+| Frontend | 30 | Páginas e recursos servidos com o tipo correto, menu completo em todas as páginas, links e imports existentes, `fetch` só no cliente da API, nenhum uso de `innerHTML` (proteção contra XSS), Chart.js na versão fixada e com licença |
 | Aplicação | 3 | Inicialização do contexto e relógio da aplicação |
 
 Os testes usam um **banco SQLite separado** em `target/`, recriado a cada execução, e nunca alteram o banco de desenvolvimento.
+
+A interface também tem um **roteiro de testes manuais** (fluxos, estados de erro, responsividade e XSS) em [docs/frontend.md](docs/frontend.md#roteiro-de-testes-manuais).
 
 ## Decisões técnicas
 
@@ -285,6 +303,12 @@ Os testes usam um **banco SQLite separado** em `target/`, recriado a cada execu�
 - **Datas com um relógio único.** As datas são geradas por um `Clock` no fuso `America/Sao_Paulo`, com precisão de segundos, o que permite fixar o horário nos testes. No banco, ficam no formato `YYYY-MM-DD HH:MM:SS`, compatível com as funções de data do SQLite.
 - **Uma conexão no pool.** O SQLite aceita uma escrita por vez, e uma única conexão evita erros de `database is locked`.
 - **Erros padronizados (RFC 9457).** As exceções de negócio e os erros do próprio Spring seguem o mesmo formato, e erros inesperados nunca expõem SQL, stack traces ou mensagens internas.
+- **Frontend sem frameworks.** São páginas HTML independentes com JavaScript nativo em módulos. Um único módulo (`api.js`) faz todas as requisições e trata os erros da API.
+- **Proteção contra XSS.** Todo texto digitado pelos usuários é exibido com `textContent`, nunca interpretado como HTML. Um teste automatizado impede o uso de `innerHTML` nos scripts.
+- **Horário exibido sem conversão.** A API envia o horário local de São Paulo sem fuso, e a interface apenas o formata (`14/11/2026 às 08:00`). Assim, o horário mostrado é o registrado, em qualquer fuso em que o navegador esteja.
+- **O servidor decide as regras.** A interface mostra só as ações de status possíveis e valida os campos antes de enviar, para orientar o usuário. A validação definitiva continua no backend, e qualquer recusa do servidor é exibida.
+- **Painel calculado com os dados reais da API.** Os indicadores são calculados no navegador a partir de `GET /api/ocorrencias`, que retorna todas as ocorrências. Por isso, o painel não exigiu nenhuma mudança no backend.
+- **Chart.js como cópia local.** O arquivo oficial da versão 4.6.1, sem alterações e com hash de integridade verificado, fica em `static/vendor/`. Ele funciona offline, não depende de CDN e não alterou o `pom.xml`. Se o Chart.js não carregar, o painel mostra os mesmos dados em tabelas.
 
 ## Estrutura do projeto
 
@@ -292,6 +316,7 @@ Os testes usam um **banco SQLite separado** em `target/`, recriado a cada execu�
 ├── data/                        # banco SQLite de desenvolvimento (ignorado pelo Git)
 ├── docs/
 │   ├── api.md                   # documentação da API REST
+│   ├── frontend.md              # interface web, decisões e roteiro de testes manuais
 │   └── modelo-dados.md          # modelo de dados, decisões e consultas do dashboard
 ├── src/
 │   ├── main/
@@ -307,16 +332,24 @@ Os testes usam um **banco SQLite separado** em `target/`, recriado a cada execu�
 │   │       ├── application.properties
 │   │       ├── schema.sql       # criação das tabelas e índices
 │   │       ├── data.sql         # categorias iniciais
-│   │       └── static/          # frontend (próxima etapa)
+│   │       └── static/          # frontend: 5 páginas HTML, css/, js/, img/ e vendor/ (Chart.js)
 │   └── test/                    # testes unitários e de integração
 ├── mvnw, mvnw.cmd               # Maven Wrapper
 └── pom.xml
 ```
 
+## Limitações do MVP
+
+- **Atualização de status pública.** Não há autenticação, então **qualquer pessoa** pode atualizar o andamento de uma ocorrência pela página de detalhe. A própria página informa isso, e toda alteração fica registrada no histórico. Em uma versão futura, essa ação deve ser restrita a um perfil de gestão com login.
+- **Listagem sem paginação.** A API retorna todas as ocorrências de uma vez, o que é adequado ao volume de um MVP. O painel também depende disso: com um volume grande, o caminho é um endpoint de estatísticas no backend, usando as consultas SQL já especificadas em [docs/modelo-dados.md](docs/modelo-dados.md#consultas-do-dashboard).
+- **Bairro como texto livre.** Espaços extras são removidos e o agrupamento ignora maiúsculas e minúsculas em letras sem acento. Grafias diferentes, como "Sé" e "Se" ou "SÉ" e "sé", ainda contam como bairros distintos.
+
 ## Próximos passos
 
-- [ ] **Frontend** em HTML, CSS e JavaScript (`src/main/resources/static/`): formulário de registro, consulta por protocolo, listagem com filtros e linha do tempo do histórico.
-- [ ] **Dashboard** com Chart.js: totais por status, ocorrências por categoria e por bairro, evolução diária, taxa de resolução e tempo médio de resolução. As consultas SQL já estão especificadas em [docs/modelo-dados.md](docs/modelo-dados.md#consultas-do-dashboard).
+- [x] **Frontend** em HTML, CSS e JavaScript: registro, consulta por protocolo, listagem com filtros, detalhe com histórico e atualização de status.
+- [x] **Painel de indicadores** com Chart.js: totais por status, ocorrências por categoria e por bairro, evolução diária, taxa de resolução e tempo médio de resolução.
+
+**Possíveis evoluções:** autenticação para a gestão do andamento, paginação da listagem e endpoint de estatísticas para grandes volumes.
 
 **Fora do escopo do MVP:** autenticação, upload de imagens, geolocalização automática e integração com órgãos públicos.
 
@@ -324,10 +357,13 @@ Os testes usam um **banco SQLite separado** em `target/`, recriado a cada execu�
 
 - [docs/modelo-dados.md](docs/modelo-dados.md): tabelas, restrições, índices, datas, ciclo de vida do status e consultas do dashboard
 - [docs/api.md](docs/api.md): endpoints, exemplos de requisição e resposta, formato de erros e testes manuais
+- [docs/frontend.md](docs/frontend.md): estrutura da interface, painel de indicadores, decisões técnicas, estados, acessibilidade e roteiro de testes manuais
 
 ## Equipe
 
-> _Adicionar aqui os nomes e RMs dos integrantes._
+- Danilo Senna - RM 561588
+- Jéssica Brito - RM 565848
+- Mariana Albano - RM 564677
 
 ---
 

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ocorrência · Bairro em Foco</title>
+  <meta name="description" content="Detalhes, histórico e andamento de uma ocorrência.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script type="module" src="js/paginas/ocorrencia.js"></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__interno">
+      <a class="marca" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">Bairro em Foco</a>
+      <nav class="navegacao" aria-label="Principal">
+        <a href="index.html">Início</a>
+        <a href="registrar.html">Registrar</a>
+        <a href="ocorrencias.html">Ocorrências</a>
+        <a href="painel.html">Painel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container pagina">
+    <a class="voltar" id="voltar" href="ocorrencias.html">
+      <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6"/></svg>
+      Voltar à lista
+    </a>
+
+    <!-- Carregando -->
+    <div class="detalhe" id="carregando" aria-busy="true" aria-label="Carregando ocorrência">
+      <div class="painel detalhe-esqueleto" aria-hidden="true">
+        <span class="esqueleto esqueleto--titulo"></span>
+        <span class="esqueleto esqueleto--linha esqueleto--curta"></span>
+        <span class="esqueleto esqueleto--linha esqueleto--media"></span>
+        <span class="esqueleto esqueleto--linha"></span>
+        <span class="esqueleto esqueleto--linha esqueleto--media"></span>
+      </div>
+      <div class="painel detalhe-esqueleto" aria-hidden="true">
+        <span class="esqueleto esqueleto--titulo"></span>
+        <span class="esqueleto esqueleto--linha"></span>
+        <span class="esqueleto esqueleto--linha esqueleto--media"></span>
+      </div>
+    </div>
+
+    <!-- Erro ou protocolo não encontrado -->
+    <div id="estado" hidden></div>
+
+    <!-- Conteúdo -->
+    <div class="detalhe" id="detalhe" hidden>
+      <div class="detalhe__principal">
+        <article class="painel" aria-labelledby="titulo-ocorrencia">
+          <div class="detalhe__topo">
+            <h1 class="detalhe__titulo" id="titulo-ocorrencia"></h1>
+            <span id="selo-status"></span>
+          </div>
+          <p class="detalhe__categoria" id="categoria"></p>
+          <p class="detalhe__local">
+            <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            <span><span class="detalhe__bairro" id="bairro"></span> · <span id="endereco"></span></span>
+          </p>
+          <p class="detalhe__descricao" id="descricao"></p>
+          <dl class="detalhe__datas">
+            <div><dt>Registrada em</dt><dd id="criado-em"></dd></div>
+            <div><dt>Última atualização</dt><dd id="atualizado-em"></dd></div>
+            <div id="bloco-resolvido-em"><dt>Resolvida em</dt><dd id="resolvido-em"></dd></div>
+          </dl>
+        </article>
+
+        <section class="painel" aria-labelledby="historico-titulo">
+          <h2 class="painel__titulo" id="historico-titulo">Histórico</h2>
+          <ol class="linha-do-tempo" id="historico"></ol>
+        </section>
+      </div>
+
+      <aside class="detalhe__lateral">
+        <section class="painel andamento" aria-labelledby="andamento-titulo">
+          <h2 class="painel__titulo" id="andamento-titulo">Atualizar andamento</h2>
+          <p class="andamento__atual">Status atual: <span id="andamento-status"></span></p>
+          <div class="andamento__alerta" id="andamento-alerta" tabindex="-1"></div>
+          <div class="andamento__acoes" id="andamento-acoes"></div>
+          <p class="andamento__aviso">
+            No MVP não há login: o andamento pode ser atualizado por qualquer pessoa.
+            Toda alteração fica registrada no histórico.
+          </p>
+        </section>
+      </aside>
+    </div>
+
+    <dialog class="dialogo" id="dialogo-confirmacao" aria-labelledby="dialogo-titulo" aria-describedby="dialogo-texto">
+      <form class="dialogo__formulario" method="dialog">
+        <h2 class="dialogo__titulo" id="dialogo-titulo">Marcar como resolvida?</h2>
+        <p class="dialogo__texto" id="dialogo-texto">
+          Esta ação é definitiva: depois de resolvida, a ocorrência não pode ser reaberta nem ter o status alterado.
+        </p>
+        <div class="dialogo__acoes">
+          <button class="botao botao--secundario" value="cancelar" autofocus>Cancelar</button>
+          <button class="botao botao--primario" value="confirmar">Confirmar resolução</button>
+        </div>
+      </form>
+    </dialog>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p>Bairro em Foco · Projeto acadêmico FIAP · Global Solution 2026 (CitizenTech)</p>
+      <p class="rodape__privacidade">Nenhum dado pessoal é coletado.</p>
+    </div>
+  </footer>
+
+  <div class="avisos" id="avisos" aria-live="polite"></div>
+</body>
+</html>

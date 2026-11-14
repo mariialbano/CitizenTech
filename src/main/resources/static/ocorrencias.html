@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ocorrências · Bairro em Foco</title>
+  <meta name="description" content="Veja as ocorrências de infraestrutura urbana registradas e filtre por status e categoria.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script type="module" src="js/paginas/ocorrencias.js"></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__interno">
+      <a class="marca" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">Bairro em Foco</a>
+      <nav class="navegacao" aria-label="Principal">
+        <a href="index.html">Início</a>
+        <a href="registrar.html">Registrar</a>
+        <a href="ocorrencias.html" aria-current="page">Ocorrências</a>
+        <a href="painel.html">Painel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container pagina">
+    <div class="pagina__cabecalho">
+      <div>
+        <h1 class="pagina__titulo">Ocorrências</h1>
+        <p class="pagina__subtitulo">Problemas registrados pelos moradores, dos mais recentes aos mais antigos.</p>
+      </div>
+      <a class="botao botao--primario" href="registrar.html">Registrar ocorrência</a>
+    </div>
+
+    <form class="painel filtros" id="form-filtros" aria-label="Filtros">
+      <div class="campo">
+        <label class="campo__rotulo" for="filtro-status">Status</label>
+        <select class="entrada" id="filtro-status" name="status">
+          <option value="">Todos os status</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label class="campo__rotulo" for="filtro-categoria">Categoria</label>
+        <select class="entrada" id="filtro-categoria" name="categoriaId">
+          <option value="">Todas as categorias</option>
+        </select>
+      </div>
+      <div class="filtros__acoes">
+        <button class="botao botao--secundario" id="limpar-filtros" type="button">Limpar filtros</button>
+      </div>
+    </form>
+
+    <div id="alerta-categorias"></div>
+    <p class="resultados__resumo" id="resumo" aria-live="polite"></p>
+    <div id="resultados" aria-busy="true"></div>
+
+    <template id="modelo-card">
+      <li class="card-ocorrencia">
+        <a class="card-ocorrencia__link">
+          <div class="card-ocorrencia__topo">
+            <span class="protocolo" data-campo="protocolo"></span>
+            <span data-campo="status"></span>
+          </div>
+          <h2 class="card-ocorrencia__categoria" data-campo="categoria"></h2>
+          <p class="card-ocorrencia__local">
+            <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            <span><span class="card-ocorrencia__bairro" data-campo="bairro"></span> · <span data-campo="endereco"></span></span>
+          </p>
+          <p class="card-ocorrencia__descricao" data-campo="descricao"></p>
+          <p class="card-ocorrencia__data">Registrada em <span data-campo="data"></span></p>
+        </a>
+      </li>
+    </template>
+
+    <template id="modelo-card-esqueleto">
+      <li class="card-esqueleto" aria-hidden="true">
+        <span class="esqueleto esqueleto--linha esqueleto--curta"></span>
+        <span class="esqueleto esqueleto--titulo"></span>
+        <span class="esqueleto esqueleto--linha esqueleto--media"></span>
+        <span class="esqueleto esqueleto--linha"></span>
+        <span class="esqueleto esqueleto--linha esqueleto--media"></span>
+      </li>
+    </template>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p>Bairro em Foco · Projeto acadêmico FIAP · Global Solution 2026 (CitizenTech)</p>
+      <p class="rodape__privacidade">Nenhum dado pessoal é coletado.</p>
+    </div>
+  </footer>
+</body>
+</html>

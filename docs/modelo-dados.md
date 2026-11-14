@@ -166,6 +166,11 @@ Não há índice em `criado_em` porque o `id` cresce com o tempo: `ORDER BY id D
 
 ## Consultas do dashboard
 
+O painel (`painel.html`) aplica estas mesmas regras **no navegador**, sobre `GET /api/ocorrencias` e
+`GET /api/categorias` (ver [frontend.md](frontend.md#painel-de-indicadores)), e por isso não exigiu mudanças no
+backend. As consultas abaixo continuam sendo a referência das regras e o caminho para um futuro endpoint de
+estatísticas, caso o volume de ocorrências cresça.
+
 ```sql
 -- Totais por status (cards de indicadores)
 SELECT status, COUNT(*) AS total FROM ocorrencia GROUP BY status;

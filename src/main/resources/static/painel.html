@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel de indicadores · Bairro em Foco</title>
+  <meta name="description" content="Indicadores e gráficos sobre as ocorrências de infraestrutura urbana registradas.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilos.css">
+  <!-- Chart.js 4.6.1 (MIT), cópia local fixa: ver vendor/chartjs/4.6.1/LICENSE.md -->
+  <script src="vendor/chartjs/4.6.1/chart.umd.min.js" defer></script>
+  <script type="module" src="js/paginas/painel.js"></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__interno">
+      <a class="marca" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">Bairro em Foco</a>
+      <nav class="navegacao" aria-label="Principal">
+        <a href="index.html">Início</a>
+        <a href="registrar.html">Registrar</a>
+        <a href="ocorrencias.html">Ocorrências</a>
+        <a href="painel.html" aria-current="page">Painel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container pagina">
+    <div class="pagina__cabecalho">
+      <div>
+        <h1 class="pagina__titulo">Painel de indicadores</h1>
+        <p class="pagina__subtitulo">
+          Calculado a partir de todas as ocorrências registradas na plataforma.
+          <span id="atualizado-em" aria-live="polite"></span>
+        </p>
+      </div>
+      <button class="botao botao--secundario" id="botao-atualizar" type="button" hidden>Atualizar dados</button>
+    </div>
+
+    <div id="alerta-painel" class="painel-alertas"></div>
+
+    <!-- Carregando -->
+    <div id="carregando" aria-busy="true" aria-label="Carregando indicadores">
+      <ul class="indicadores indicadores--painel" aria-hidden="true">
+        <li class="indicador"><span class="esqueleto esqueleto--linha esqueleto--media"></span><span class="esqueleto esqueleto--titulo"></span></li>
+        <li class="indicador"><span class="esqueleto esqueleto--linha esqueleto--media"></span><span class="esqueleto esqueleto--titulo"></span></li>
+        <li class="indicador"><span class="esqueleto esqueleto--linha esqueleto--media"></span><span class="esqueleto esqueleto--titulo"></span></li>
+      </ul>
+      <div class="graficos" aria-hidden="true">
+        <div class="painel grafico"><span class="esqueleto esqueleto--titulo"></span><span class="esqueleto grafico__esqueleto"></span></div>
+        <div class="painel grafico"><span class="esqueleto esqueleto--titulo"></span><span class="esqueleto grafico__esqueleto"></span></div>
+      </div>
+    </div>
+
+    <!-- Erro ou ausência de dados -->
+    <div id="estado" hidden></div>
+
+    <!-- Conteúdo -->
+    <div id="painel" hidden>
+      <section aria-labelledby="resumo-titulo">
+        <h2 id="resumo-titulo" class="visualmente-oculto">Resumo</h2>
+        <ul class="indicadores indicadores--painel">
+          <li>
+            <div class="indicador indicador--total">
+              <span class="indicador__rotulo">Total de ocorrências</span>
+              <span class="indicador__valor" id="kpi-total"></span>
+            </div>
+          </li>
+          <li>
+            <a class="indicador indicador--aberto" href="ocorrencias.html?status=ABERTO">
+              <span class="indicador__rotulo">Abertas</span>
+              <span class="indicador__valor" id="kpi-ABERTO"></span>
+            </a>
+          </li>
+          <li>
+            <a class="indicador indicador--andamento" href="ocorrencias.html?status=EM_ANDAMENTO">
+              <span class="indicador__rotulo">Em andamento</span>
+              <span class="indicador__valor" id="kpi-EM_ANDAMENTO"></span>
+            </a>
+          </li>
+          <li>
+            <a class="indicador indicador--resolvido" href="ocorrencias.html?status=RESOLVIDO">
+              <span class="indicador__rotulo">Resolvidas</span>
+              <span class="indicador__valor" id="kpi-RESOLVIDO"></span>
+            </a>
+          </li>
+          <li>
+            <div class="indicador indicador--destaque">
+              <span class="indicador__rotulo">Taxa de resolução</span>
+              <span class="indicador__valor" id="kpi-taxa"></span>
+              <span class="indicador__nota">das ocorrências já foram resolvidas</span>
+            </div>
+          </li>
+          <li>
+            <div class="indicador indicador--destaque">
+              <span class="indicador__rotulo">Tempo médio de resolução</span>
+              <span class="indicador__valor" id="kpi-tempo"></span>
+              <span class="indicador__nota" id="kpi-tempo-nota">entre o registro e a resolução</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <div id="alerta-graficos"></div>
+
+      <div class="graficos">
+        <section class="painel grafico" aria-labelledby="g-status-titulo">
+          <h2 class="grafico__titulo" id="g-status-titulo">Ocorrências por status</h2>
+          <p class="grafico__descricao">Situação atual de todas as ocorrências.</p>
+          <div class="grafico__area"><canvas id="g-status" role="img"></canvas></div>
+          <details class="grafico__dados"><summary>Ver dados em tabela</summary><div id="t-status"></div></details>
+        </section>
+
+        <section class="painel grafico" aria-labelledby="g-categoria-titulo">
+          <h2 class="grafico__titulo" id="g-categoria-titulo">Ocorrências por categoria</h2>
+          <p class="grafico__descricao">Quantidade em cada categoria, separada por status.</p>
+          <div class="grafico__area"><canvas id="g-categoria" role="img"></canvas></div>
+          <details class="grafico__dados"><summary>Ver dados em tabela</summary><div id="t-categoria"></div></details>
+        </section>
+
+        <section class="painel grafico grafico--largo" aria-labelledby="g-dias-titulo">
+          <h2 class="grafico__titulo" id="g-dias-titulo">Novas ocorrências nos últimos 30 dias</h2>
+          <p class="grafico__descricao" id="g-dias-descricao">Registros por dia, no horário de São Paulo.</p>
+          <div class="grafico__area"><canvas id="g-dias" role="img"></canvas></div>
+          <details class="grafico__dados"><summary>Ver dados em tabela</summary><div id="t-dias"></div></details>
+        </section>
+
+        <section class="painel grafico" aria-labelledby="g-bairros-titulo">
+          <h2 class="grafico__titulo" id="g-bairros-titulo">Bairros com mais ocorrências</h2>
+          <p class="grafico__descricao">Os 10 bairros com mais registros.</p>
+          <div class="grafico__area"><canvas id="g-bairros" role="img"></canvas></div>
+          <details class="grafico__dados"><summary>Ver dados em tabela</summary><div id="t-bairros"></div></details>
+        </section>
+
+        <section class="painel grafico" aria-labelledby="g-tempo-titulo">
+          <h2 class="grafico__titulo" id="g-tempo-titulo">Tempo médio de resolução por categoria</h2>
+          <p class="grafico__descricao">Considera apenas as ocorrências já resolvidas.</p>
+          <div class="grafico__area" id="g-tempo-area"><canvas id="g-tempo" role="img"></canvas></div>
+          <p class="grafico__vazio" id="g-tempo-vazio" hidden>Nenhuma ocorrência foi resolvida ainda.</p>
+          <details class="grafico__dados" id="g-tempo-dados"><summary>Ver dados em tabela</summary><div id="t-tempo"></div></details>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p>Bairro em Foco · Projeto acadêmico FIAP · Global Solution 2026 (CitizenTech)</p>
+      <p class="rodape__privacidade">Nenhum dado pessoal é coletado.</p>
+    </div>
+  </footer>
+</body>
+</html>

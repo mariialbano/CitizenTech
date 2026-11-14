@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registrar ocorrência · Bairro em Foco</title>
+  <meta name="description" content="Registre um problema de infraestrutura urbana no seu bairro.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script type="module" src="js/paginas/registrar.js"></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__interno">
+      <a class="marca" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">Bairro em Foco</a>
+      <nav class="navegacao" aria-label="Principal">
+        <a href="index.html">Início</a>
+        <a href="registrar.html" aria-current="page">Registrar</a>
+        <a href="ocorrencias.html">Ocorrências</a>
+        <a href="painel.html">Painel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" class="container pagina">
+    <div class="pagina__cabecalho">
+      <div>
+        <h1 class="pagina__titulo">Registrar ocorrência</h1>
+        <p class="pagina__subtitulo">Conte o que está acontecendo. Leva menos de um minuto.</p>
+      </div>
+    </div>
+
+    <div class="registro">
+      <section class="painel" id="area-formulario" aria-label="Formulário de registro">
+        <form id="form-ocorrencia" class="formulario" novalidate>
+          <div id="alertas-formulario" tabindex="-1"></div>
+
+          <fieldset class="formulario__grupo" id="campos-formulario">
+            <legend class="visualmente-oculto">Dados da ocorrência</legend>
+
+            <div class="campo">
+              <label class="campo__rotulo" for="categoriaId">Categoria <span class="campo__obrigatorio" aria-hidden="true">*</span></label>
+              <select class="entrada" id="categoriaId" name="categoriaId" required aria-describedby="erro-categoriaId">
+                <option value="">Carregando categorias…</option>
+              </select>
+              <p id="erro-categoriaId" class="campo__erro" hidden></p>
+            </div>
+
+            <div class="campo">
+              <label class="campo__rotulo" for="descricao">Descrição do problema <span class="campo__obrigatorio" aria-hidden="true">*</span></label>
+              <textarea class="entrada" id="descricao" name="descricao" required rows="5"
+                        aria-describedby="ajuda-descricao contador-descricao erro-descricao"
+                        placeholder="Ex.: Buraco grande na faixa da direita, perto da faixa de pedestres."></textarea>
+              <div class="campo__rodape">
+                <p id="ajuda-descricao" class="campo__ajuda">Descreva o problema com detalhes (mínimo de 10 caracteres).</p>
+                <p id="contador-descricao" class="campo__contador" aria-live="polite">0/1000</p>
+              </div>
+              <p id="erro-descricao" class="campo__erro" hidden></p>
+            </div>
+
+            <div class="campo">
+              <label class="campo__rotulo" for="bairro">Bairro <span class="campo__obrigatorio" aria-hidden="true">*</span></label>
+              <input class="entrada" id="bairro" name="bairro" required autocomplete="off"
+                     aria-describedby="erro-bairro" placeholder="Ex.: Vila Nova">
+              <p id="erro-bairro" class="campo__erro" hidden></p>
+            </div>
+
+            <div class="campo">
+              <label class="campo__rotulo" for="enderecoReferencia">Endereço ou ponto de referência <span class="campo__obrigatorio" aria-hidden="true">*</span></label>
+              <input class="entrada" id="enderecoReferencia" name="enderecoReferencia" required autocomplete="off"
+                     aria-describedby="ajuda-endereco erro-enderecoReferencia"
+                     placeholder="Ex.: Rua das Flores, 100 ou Em frente à padaria">
+              <p id="ajuda-endereco" class="campo__ajuda">Um endereço aproximado ou algo que ajude a encontrar o local.</p>
+              <p id="erro-enderecoReferencia" class="campo__erro" hidden></p>
+            </div>
+          </fieldset>
+
+          <p class="campo__ajuda"><span class="campo__obrigatorio" aria-hidden="true">*</span> Campos obrigatórios.</p>
+
+          <div class="formulario__acoes">
+            <button class="botao botao--primario" id="botao-enviar" type="submit">Enviar registro</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="painel sucesso" id="painel-sucesso" aria-labelledby="sucesso-titulo" hidden>
+        <div class="sucesso__icone">
+          <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.7 2.7L16.5 9.5"/></svg>
+        </div>
+        <h2 class="sucesso__titulo" id="sucesso-titulo" tabindex="-1">Ocorrência registrada!</h2>
+        <div class="sucesso__protocolo">
+          <span class="sucesso__protocolo-rotulo">Seu protocolo</span>
+          <span class="sucesso__protocolo-numero" id="sucesso-protocolo"></span>
+        </div>
+        <p class="sucesso__texto">Guarde este número: é com ele que você acompanha o andamento da ocorrência.</p>
+        <div class="sucesso__acoes">
+          <a class="botao botao--primario" id="sucesso-acompanhar" href="ocorrencias.html">Acompanhar ocorrência</a>
+          <button class="botao botao--secundario" id="sucesso-copiar" type="button">Copiar protocolo</button>
+          <button class="botao botao--secundario" id="sucesso-nova" type="button">Registrar outra</button>
+        </div>
+      </section>
+
+      <aside class="dicas" aria-label="Dicas para o registro">
+        <div class="painel">
+          <h2 class="painel__titulo">Dicas para um bom registro</h2>
+          <ul class="dicas__lista">
+            <li>Diga o que é, o tamanho e há quanto tempo o problema existe.</li>
+            <li>Use pontos de referência conhecidos: comércios, praças, escolas.</li>
+            <li>Confira se o problema já não foi registrado na lista de ocorrências.</li>
+          </ul>
+        </div>
+        <p class="privacidade">
+          <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <span>Não pedimos nome, e-mail ou telefone. Evite incluir dados pessoais na descrição.</span>
+        </p>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p>Bairro em Foco · Projeto acadêmico FIAP · Global Solution 2026 (CitizenTech)</p>
+      <p class="rodape__privacidade">Nenhum dado pessoal é coletado.</p>
+    </div>
+  </footer>
+
+  <div class="avisos" id="avisos" aria-live="polite"></div>
+</body>
+</html>

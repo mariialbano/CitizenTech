@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bairro em Foco · Registre e acompanhe problemas do seu bairro</title>
+  <meta name="description" content="Registre problemas de infraestrutura urbana do seu bairro e acompanhe a solução, sem informar dados pessoais.">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script type="module" src="js/paginas/inicio.js"></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="cabecalho">
+    <div class="container cabecalho__interno">
+      <a class="marca" href="index.html"><img src="img/logo.svg" alt="" width="32" height="32">Bairro em Foco</a>
+      <nav class="navegacao" aria-label="Principal">
+        <a href="index.html" aria-current="page">Início</a>
+        <a href="registrar.html">Registrar</a>
+        <a href="ocorrencias.html">Ocorrências</a>
+        <a href="painel.html">Painel</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="heroi" aria-labelledby="heroi-titulo">
+      <div class="container heroi__interno">
+        <div>
+          <p class="heroi__selo">CitizenTech · participação cidadã</p>
+          <h1 id="heroi-titulo" class="heroi__titulo">Seu bairro melhor começa com <em>um registro</em>.</h1>
+          <p class="heroi__texto">
+            Informe buracos, iluminação apagada, lixo descartado irregularmente ou calçadas danificadas
+            e acompanhe cada etapa até a solução.
+          </p>
+          <div class="heroi__acoes">
+            <a class="botao botao--destaque" href="registrar.html">Registrar ocorrência</a>
+            <a class="botao botao--contorno-claro" href="ocorrencias.html">Ver ocorrências</a>
+          </div>
+        </div>
+
+        <svg class="heroi__ilustracao" viewBox="0 0 360 300" aria-hidden="true" focusable="false">
+          <rect x="10" y="20" width="340" height="260" rx="28" fill="#ffffff" fill-opacity=".08"/>
+          <path d="M10 120h340M10 205h340M120 20v260M250 20v260" stroke="#ffffff" stroke-opacity=".18" stroke-width="14"/>
+          <rect x="30" y="38" width="70" height="64" rx="10" fill="#ffffff" fill-opacity=".12"/>
+          <rect x="140" y="38" width="90" height="64" rx="10" fill="#ffffff" fill-opacity=".12"/>
+          <rect x="270" y="138" width="62" height="52" rx="10" fill="#ffffff" fill-opacity=".12"/>
+          <rect x="30" y="222" width="70" height="40" rx="10" fill="#ffffff" fill-opacity=".12"/>
+          <rect x="140" y="138" width="90" height="52" rx="10" fill="#ffffff" fill-opacity=".12"/>
+          <g transform="translate(166 64)">
+            <path d="M18 0C8 0 0 7.8 0 17.6 0 30.8 18 48 18 48s18-17.2 18-30.4C36 7.8 28 0 18 0Z" fill="#F2A33A"/>
+            <circle cx="18" cy="17.5" r="6.5" fill="#0A4252"/>
+          </g>
+          <g transform="translate(52 150)">
+            <path d="M14 0C6.3 0 0 6.1 0 13.7 0 24 14 37.4 14 37.4S28 24 28 13.7C28 6.1 21.7 0 14 0Z" fill="#ffffff"/>
+            <circle cx="14" cy="13.6" r="5" fill="#0F5E73"/>
+          </g>
+          <g transform="translate(282 70)">
+            <path d="M14 0C6.3 0 0 6.1 0 13.7 0 24 14 37.4 14 37.4S28 24 28 13.7C28 6.1 21.7 0 14 0Z" fill="#6CE9A6"/>
+            <path d="m8.5 13.8 3.6 3.6 7-7" stroke="#0A4252" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <circle cx="184" cy="81" r="44" fill="none" stroke="#F2A33A" stroke-opacity=".5" stroke-width="2" stroke-dasharray="6 7"/>
+        </svg>
+      </div>
+    </section>
+
+    <div class="container consulta">
+      <section class="painel consulta__painel" aria-labelledby="consulta-titulo">
+        <div>
+          <h2 id="consulta-titulo" class="consulta__titulo">Já tem um protocolo?</h2>
+          <p class="consulta__texto">Digite o número recebido no registro para acompanhar a ocorrência.</p>
+        </div>
+        <form id="form-consulta" class="consulta__formulario" novalidate>
+          <label class="visualmente-oculto" for="protocolo">Número do protocolo</label>
+          <input class="entrada" id="protocolo" name="protocolo" inputmode="numeric" autocomplete="off"
+                 placeholder="Ex.: 42" aria-describedby="erro-protocolo">
+          <button class="botao botao--primario" type="submit">Consultar</button>
+          <p id="erro-protocolo" class="campo__erro" hidden></p>
+        </form>
+      </section>
+    </div>
+
+    <section class="container secao" aria-labelledby="indicadores-titulo">
+      <h2 id="indicadores-titulo" class="secao__titulo">Situação das ocorrências</h2>
+      <p class="secao__subtitulo">Panorama de todas as ocorrências registradas na plataforma.</p>
+      <div id="indicadores-alerta"></div>
+      <ul class="indicadores" id="indicadores">
+        <li>
+          <a class="indicador indicador--aberto" href="ocorrencias.html?status=ABERTO">
+            <span class="indicador__rotulo">Abertas</span>
+            <span class="indicador__valor" data-status="ABERTO"><span class="esqueleto"></span></span>
+          </a>
+        </li>
+        <li>
+          <a class="indicador indicador--andamento" href="ocorrencias.html?status=EM_ANDAMENTO">
+            <span class="indicador__rotulo">Em andamento</span>
+            <span class="indicador__valor" data-status="EM_ANDAMENTO"><span class="esqueleto"></span></span>
+          </a>
+        </li>
+        <li>
+          <a class="indicador indicador--resolvido" href="ocorrencias.html?status=RESOLVIDO">
+            <span class="indicador__rotulo">Resolvidas</span>
+            <span class="indicador__valor" data-status="RESOLVIDO"><span class="esqueleto"></span></span>
+          </a>
+        </li>
+      </ul>
+      <p class="indicadores__total" id="indicadores-total" aria-live="polite"></p>
+      <p class="indicadores__mais"><a href="painel.html">Ver o painel completo, com gráficos por categoria, bairro e período →</a></p>
+    </section>
+
+    <section class="container secao" aria-labelledby="como-titulo">
+      <h2 id="como-titulo" class="secao__titulo">Como funciona</h2>
+      <p class="secao__subtitulo">Três passos, sem cadastro e sem dados pessoais.</p>
+      <ol class="passos">
+        <li class="passo">
+          <h3 class="passo__titulo">Registre</h3>
+          <p>Escolha a categoria, descreva o problema e informe o bairro e um ponto de referência.</p>
+        </li>
+        <li class="passo">
+          <h3 class="passo__titulo">Guarde o protocolo</h3>
+          <p>Você recebe um número de protocolo na hora. É com ele que você acompanha o registro.</p>
+        </li>
+        <li class="passo">
+          <h3 class="passo__titulo">Acompanhe</h3>
+          <p>Veja o status atual e o histórico completo, da abertura até a resolução.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="container secao" id="secao-categorias" aria-labelledby="categorias-titulo" hidden>
+      <h2 id="categorias-titulo" class="secao__titulo">O que você pode registrar</h2>
+      <p class="secao__subtitulo">Problemas de infraestrutura urbana nas categorias abaixo.</p>
+      <ul class="etiquetas" id="lista-categorias"></ul>
+    </section>
+
+    <section class="container secao" aria-label="Privacidade">
+      <p class="privacidade">
+        <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        <span><strong>Sua privacidade é preservada.</strong> Não pedimos nome, e-mail, telefone ou qualquer
+          outro dado pessoal. O número de protocolo é tudo de que você precisa.</span>
+      </p>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape__interno">
+      <p>Bairro em Foco · Projeto acadêmico FIAP · Global Solution 2026 (CitizenTech)</p>
+      <p class="rodape__privacidade">Nenhum dado pessoal é coletado.</p>
+    </div>
+  </footer>
+</body>
+</html>
